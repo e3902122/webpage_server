@@ -8,7 +8,7 @@ if (-not (git status --porcelain)) {
 git add .
 
 # 提交更改
-git commit -m "自动更新: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+git commit -m "更新商店网页内容和样式"
 
 # 如果您使用前端框架，添加构建步骤
 # npm run build
