@@ -7,6 +7,10 @@
     "multer": "^1.4.2"
   },
   "scripts": {
-    "start": "node api/index.js"
+    "start": "node app/server.js",
+    "dev": "nodemon app/server.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
   }
 }
