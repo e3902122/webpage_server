@@ -36,7 +36,68 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 创建商品卡片
+    // 购物车功能
+    let cart = [];
+    const cartButton = document.getElementById('cart-button');
+    const cartModal = document.getElementById('cart-modal');
+    const closeCart = document.getElementById('close-cart');
+    const cartItems = document.getElementById('cart-items');
+    const cartTotal = document.getElementById('cart-total');
+    const cartCount = document.getElementById('cart-count');
+    const checkoutButton = document.getElementById('checkout-button');
+    const checkoutModal = document.getElementById('checkout-modal');
+    const closeCheckout = document.getElementById('close-checkout');
+    const checkoutForm = document.getElementById('checkout-form');
+
+    function updateCart() {
+        cartItems.innerHTML = '';
+        let total = 0;
+        cart.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.textContent = `${item.name} - $${item.price}`;
+            cartItems.appendChild(itemElement);
+            total += parseFloat(item.price);
+        });
+        cartTotal.textContent = total.toFixed(2);
+        cartCount.textContent = cart.length;
+    }
+
+    function addToCart(product) {
+        cart.push(product);
+        updateCart();
+        alert(`${product.name} 已添加到购物车！`);
+    }
+
+    cartButton.addEventListener('click', () => {
+        cartModal.style.display = 'block';
+    });
+
+    closeCart.addEventListener('click', () => {
+        cartModal.style.display = 'none';
+    });
+
+    checkoutButton.addEventListener('click', () => {
+        if (cart.length === 0) {
+            alert('购物车是空的！');
+            return;
+        }
+        cartModal.style.display = 'none';
+        checkoutModal.style.display = 'block';
+    });
+
+    closeCheckout.addEventListener('click', () => {
+        checkoutModal.style.display = 'none';
+    });
+
+    checkoutForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('付款成功！谢谢您的购买。');
+        cart = [];
+        updateCart();
+        checkoutModal.style.display = 'none';
+    });
+
+    // 修改创建商品卡片的函数
     function createProductCard(product) {
         const card = document.createElement('div');
         card.className = 'product-card glass';
@@ -47,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <button class="add-to-cart">加入购物车</button>
         `;
         card.querySelector('.add-to-cart').addEventListener('click', () => {
-            alert(`${product.name} 已添加到购物车！`);
+            addToCart(product);
         });
         return card;
     }

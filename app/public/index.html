@@ -16,6 +16,7 @@
                 <li><a href="#products">商品</a></li>
                 <li><a href="#about">关于我们</a></li>
                 <li><a href="#contact">联系我们</a></li>
+                <li><a href="#" id="cart-button">购物车 (<span id="cart-count">0</span>)</a></li>
             </ul>
         </nav>
     </header>
@@ -49,6 +50,32 @@
                 <button type="submit">发送</button>
             </form>
         </section>
+
+        <!-- 添加购物车部分 -->
+        <div id="cart-modal" class="modal">
+            <div class="modal-content glass">
+                <h2>购物车</h2>
+                <div id="cart-items"></div>
+                <p>总计: $<span id="cart-total">0.00</span></p>
+                <button id="checkout-button">结账</button>
+                <button id="close-cart">关闭</button>
+            </div>
+        </div>
+
+        <!-- 添加结账部分 -->
+        <div id="checkout-modal" class="modal">
+            <div class="modal-content glass">
+                <h2>结账</h2>
+                <form id="checkout-form">
+                    <input type="text" placeholder="姓名" required>
+                    <input type="email" placeholder="邮箱" required>
+                    <input type="text" placeholder="地址" required>
+                    <input type="text" placeholder="信用卡号" required>
+                    <button type="submit">完成付款</button>
+                </form>
+                <button id="close-checkout">取消</button>
+            </div>
+        </div>
     </main>
 
     <footer class="glass">
