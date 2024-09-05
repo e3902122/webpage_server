@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <header>
+    <header class="glass">
         <h1>欢迎来到我的商店</h1>
         <nav>
             <ul>
@@ -15,6 +15,7 @@
                 <li><a href="#products">商品</a></li>
                 <li><a href="#about">关于我们</a></li>
                 <li><a href="#contact">联系我们</a></li>
+                <li><a href="#admin">管理员</a></li>
             </ul>
         </nav>
     </header>
@@ -57,6 +58,23 @@
                 <textarea id="message" name="message" required></textarea>
 
                 <button type="submit">发送</button>
+            </form>
+        </section>
+
+        <!-- 在 main 标签内添加管理员部分 -->
+        <section id="admin" class="glass">
+            <h2>管理员后台</h2>
+            <form id="product-form">
+                <label for="product-name">商品名称：</label>
+                <input type="text" id="product-name" required>
+                
+                <label for="product-price">商品价格：</label>
+                <input type="number" id="product-price" required>
+                
+                <label for="product-image">商品图片 URL：</label>
+                <input type="url" id="product-image" required>
+                
+                <button type="submit">上架商品</button>
             </form>
         </section>
     </main>
