@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const { MongoClient, ObjectId } = require('mongodb');
 const app = express();
 
 // 服务静态文件
@@ -8,20 +9,30 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 使用 express.json() 中间件来解析 JSON 请求体
 app.use(express.json());
 
-// 使用环境变量存储商品数据
-let products = process.env.PRODUCTS ? JSON.parse(process.env.PRODUCTS) : [];
+// MongoDB 连接 URI（请替换为你的实际连接字符串）
+const uri = process.env.MONGODB_URI;
+const client = new MongoClient(uri);
+
+async function connectToDatabase() {
+  try {
+    await client.connect();
+    console.log('Connected to MongoDB');
+    return client.db('shopDatabase'); // 替换为你的数据库名称
+  } catch (error) {
+    console.error('Failed to connect to MongoDB:', error);
+    process.exit(1);
+  }
+}
+
+let db;
 
 // API 路由
 app.post('/api/products', async (req, res) => {
   try {
     const { name, price, image } = req.body;
-    const newProduct = { id: Date.now(), name, price, image };
-    products.push(newProduct);
-    // 在实际应用中，这里应该更新环境变量
-    // 但在 Vercel 中，我们无法直接修改环境变量
-    // 这里只是模拟添加商品
-    console.log('添加新商品:', newProduct);
-    res.status(201).json(newProduct);
+    const collection = db.collection('products');
+    const result = await collection.insertOne({ name, price, image });
+    res.status(201).json({ id: result.insertedId, name, price, image });
   } catch (error) {
     console.error('Error adding product:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -30,10 +41,11 @@ app.post('/api/products', async (req, res) => {
 
 app.get('/api/products', async (req, res) => {
   try {
-    console.log('服务器返回的商品:', products);
+    const collection = db.collection('products');
+    const products = await collection.find({}).toArray();
     res.json(products);
   } catch (error) {
-    console.error('读取商品时出错:', error);
+    console.error('Error fetching products:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -44,8 +56,13 @@ app.get('*', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`服务器运行在端口 ${PORT}`);
+
+// 连接到数据库并启动服务器
+connectToDatabase().then((database) => {
+  db = database;
+  app.listen(PORT, () => {
+    console.log(`服务器运行在端口 ${PORT}`);
+  });
 });
 
 module.exports = app;
