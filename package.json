@@ -3,14 +3,9 @@
   "version": "1.0.0",
   "main": "app/server.js",
   "dependencies": {
-    "express": "^4.17.1",
-    "multer": "^1.4.2"
+    "express": "^4.17.1"
   },
   "scripts": {
-    "start": "node app/server.js",
-    "dev": "nodemon app/server.js"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.4"
+    "start": "node app/server.js"
   }
 }
