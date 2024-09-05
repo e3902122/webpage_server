@@ -1,3 +1,79 @@
+// 将 renderProducts 函数移到全局作用域
+async function renderProducts() {
+    const products = await fetchProducts();
+    console.log('获取到的商品:', products); // 添加日志
+    const productGrid = document.querySelector('.product-grid');
+    if (!productGrid) {
+        console.error('找不到商品网格元素');
+        return;
+    }
+    productGrid.innerHTML = ''; // 清空现有内容
+    if (products.length === 0) {
+        productGrid.innerHTML = '<p>暂无商品</p>';
+    } else {
+        products.forEach(product => {
+            const productCard = createProductCard(product);
+            productGrid.appendChild(productCard);
+        });
+    }
+    console.log('商品渲染完成'); // 添加日志
+}
+
+// 将 fetchProducts 函数也移到全局作用域
+async function fetchProducts() {
+    try {
+        const response = await fetch('/api/products');
+        if (!response.ok) {
+            throw new Error('Failed to fetch products');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        return [];
+    }
+}
+
+// 将 createProductCard 函数也移到全局作用域
+function createProductCard(product) {
+    const card = document.createElement('div');
+    card.className = 'product-card glass';
+    card.innerHTML = `
+        <img src="${product.image}" alt="${product.name}">
+        <h3>${product.name}</h3>
+        <p>价格: $${parseFloat(product.price).toFixed(2)}</p>
+        <button class="add-to-cart">加入购物车</button>
+    `;
+    card.querySelector('.add-to-cart').addEventListener('click', () => {
+        addToCart(product);
+    });
+    return card;
+}
+
+let cart = []; // 将购物车移到全局作用域
+
+function addToCart(product) {
+    cart.push(product);
+    updateCart();
+    alert(`${product.name} 已添加到购物车！`);
+}
+
+function updateCart() {
+    const cartItems = document.getElementById('cart-items');
+    const cartTotal = document.getElementById('cart-total');
+    const cartCount = document.getElementById('cart-count');
+
+    cartItems.innerHTML = '';
+    let total = 0;
+    cart.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.textContent = `${item.name} - $${item.price}`;
+        cartItems.appendChild(itemElement);
+        total += parseFloat(item.price);
+    });
+    cartTotal.textContent = total.toFixed(2);
+    cartCount.textContent = cart.length;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // 处理联系表单提交
     const contactForm = document.getElementById('contact-form');
@@ -9,64 +85,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 从服务器获取商品数据
-    async function fetchProducts() {
-        try {
-            const response = await fetch('/api/products');
-            if (!response.ok) {
-                throw new Error('Failed to fetch products');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching products:', error);
-            return [];
-        }
-    }
-
-    // 渲染商品
-    async function renderProducts() {
-        const products = await fetchProducts();
-        const productGrids = document.querySelectorAll('.product-grid');
-        productGrids.forEach(grid => {
-            grid.innerHTML = ''; // 清空现有内容
-            products.forEach(product => {
-                const productCard = createProductCard(product);
-                grid.appendChild(productCard);
-            });
-        });
-    }
-
     // 购物车功能
-    let cart = [];
     const cartButton = document.getElementById('cart-button');
     const cartModal = document.getElementById('cart-modal');
     const closeCart = document.getElementById('close-cart');
-    const cartItems = document.getElementById('cart-items');
-    const cartTotal = document.getElementById('cart-total');
-    const cartCount = document.getElementById('cart-count');
     const checkoutButton = document.getElementById('checkout-button');
     const checkoutModal = document.getElementById('checkout-modal');
     const closeCheckout = document.getElementById('close-checkout');
     const checkoutForm = document.getElementById('checkout-form');
-
-    function updateCart() {
-        cartItems.innerHTML = '';
-        let total = 0;
-        cart.forEach(item => {
-            const itemElement = document.createElement('div');
-            itemElement.textContent = `${item.name} - $${item.price}`;
-            cartItems.appendChild(itemElement);
-            total += parseFloat(item.price);
-        });
-        cartTotal.textContent = total.toFixed(2);
-        cartCount.textContent = cart.length;
-    }
-
-    function addToCart(product) {
-        cart.push(product);
-        updateCart();
-        alert(`${product.name} 已添加到购物车！`);
-    }
 
     cartButton.addEventListener('click', () => {
         cartModal.style.display = 'block';
@@ -97,24 +123,10 @@ document.addEventListener('DOMContentLoaded', function() {
         checkoutModal.style.display = 'none';
     });
 
-    // 修改创建商品卡片的函数
-    function createProductCard(product) {
-        const card = document.createElement('div');
-        card.className = 'product-card glass';
-        card.innerHTML = `
-            <img src="${product.image}" alt="${product.name}">
-            <h3>${product.name}</h3>
-            <p>价格: $${parseFloat(product.price).toFixed(2)}</p>
-            <button class="add-to-cart">加入购物车</button>
-        `;
-        card.querySelector('.add-to-cart').addEventListener('click', () => {
-            addToCart(product);
-        });
-        return card;
-    }
-
     // 渲染商品
-    renderProducts();
+    renderProducts().catch(error => {
+        console.error('渲染商品时出错:', error);
+    });
 });
 
 // 管理员功能 - 仅在控制台可用
@@ -162,7 +174,8 @@ async function showAdminPanel() {
 
             alert('商品添加成功！');
             addProductForm.reset();
-            renderProducts(); // 重新渲染商品列表
+            await renderProducts(); // 使用 await 确保商品列表更新完成
+            console.log('商品列表已更新'); // 添加日志
         } catch (error) {
             console.error('Error adding product:', error);
             alert('添加商品失败，请重试。');

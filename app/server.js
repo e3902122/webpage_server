@@ -49,9 +49,10 @@ app.post('/api/products', async (req, res) => {
 app.get('/api/products', async (req, res) => {
   try {
     const products = await readProducts();
+    console.log('服务器返回的商品:', products); // 添加日志
     res.json(products);
   } catch (error) {
-    console.error('Error reading products:', error);
+    console.error('读取商品时出错:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
