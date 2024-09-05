@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>電子檔商店</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #333;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#home">首頁</a></li>
+                <li><a href="#products">商品</a></li>
+                <li><a href="#cart">購物車</a></li>
+                <li><a href="/admin">管理員</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="home">
+            <h1>探索我們的電子檔</h1>
+            <div class="product-grid" id="featured-products">
+                <!-- 熱門商品將通過JavaScript動態添加 -->
+            </div>
+        </section>
+        <section id="products">
+            <h2>所有商品</h2>
+            <div class="product-grid" id="all-products">
+                <!-- 所有商品將通過JavaScript動態添加 -->
+            </div>
+        </section>
+        <section id="cart">
+            <h2>購物車</h2>
+            <div id="cart-items">
+                <!-- 購物車內容將通過JavaScript動態添加 -->
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 電子檔商店. 保留所有權利.</p>
+    </footer>
+    <script src="/script.js"></script>
+</body>
+</html>

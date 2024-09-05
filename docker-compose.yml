@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app:/usr/src/app/app
+      - uploaded_files:/usr/src/app/public/uploads
+    environment:
+      - NODE_ENV=production
+
+volumes:
+  uploaded_files:
