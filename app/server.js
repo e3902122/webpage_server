@@ -44,6 +44,11 @@ app.post('/upload', upload.single('photo'), async (req, res) => {
 // 提供静态文件访问
 app.use('/uploads', express.static(uploadDir));
 
+// 添加根路由处理
+app.get('/', (req, res) => {
+  res.send('欢迎来到我的应用！');
+});
+
 // 启动服务器
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

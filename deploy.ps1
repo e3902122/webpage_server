@@ -16,4 +16,4 @@ git push origin main
 Write-Host "更改已成功推送到 GitHub。"
 
 # 如果安装了 Vercel CLI 并且想要自动部署
-# vercel --prod
+vercel --prod
