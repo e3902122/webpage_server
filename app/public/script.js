@@ -1,22 +1,30 @@
 // 将 renderProducts 函数移到全局作用域
 async function renderProducts() {
-    const products = await fetchProducts();
-    console.log('获取到的商品:', products); // 添加日志
-    const productGrid = document.querySelector('.product-grid');
-    if (!productGrid) {
-        console.error('找不到商品网格元素');
-        return;
+    const loading = document.getElementById('loading');
+    loading.style.display = 'block';
+    try {
+        const products = await fetchProducts();
+        console.log('获取到的商品:', products);
+        const productGrid = document.querySelector('.product-grid');
+        if (!productGrid) {
+            throw new Error('找不到商品网格元素');
+        }
+        productGrid.innerHTML = '';
+        if (products.length === 0) {
+            productGrid.innerHTML = '<p>暂无商品</p>';
+        } else {
+            products.forEach(product => {
+                const productCard = createProductCard(product);
+                productGrid.appendChild(productCard);
+            });
+        }
+        console.log('商品渲染完成');
+    } catch (error) {
+        console.error('渲染商品时出错:', error);
+        alert('加载商品失败，请刷新页面重试。');
+    } finally {
+        loading.style.display = 'none';
     }
-    productGrid.innerHTML = ''; // 清空现有内容
-    if (products.length === 0) {
-        productGrid.innerHTML = '<p>暂无商品</p>';
-    } else {
-        products.forEach(product => {
-            const productCard = createProductCard(product);
-            productGrid.appendChild(productCard);
-        });
-    }
-    console.log('商品渲染完成'); // 添加日志
 }
 
 // 将 fetchProducts 函数也移到全局作用域
@@ -174,8 +182,7 @@ async function showAdminPanel() {
 
             alert('商品添加成功！');
             addProductForm.reset();
-            await renderProducts(); // 使用 await 确保商品列表更新完成
-            console.log('商品列表已更新'); // 添加日志
+            await renderProducts();
         } catch (error) {
             console.error('Error adding product:', error);
             alert('添加商品失败，请重试。');

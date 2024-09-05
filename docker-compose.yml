@@ -1,3 +1,4 @@
+version: '3'
 services:
   app:
     build: .
@@ -8,6 +9,7 @@ services:
       - uploaded_files:/usr/src/app/public/uploads
     environment:
       - NODE_ENV=production
+      - MONGODB_URI=${MONGODB_URI}
 
 volumes:
   uploaded_files:

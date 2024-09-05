@@ -1,6 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const { MongoClient, ObjectId } = require('mongodb');
+const portfinder = require('portfinder');
+const sequelize = require('../config/database'); // 确保路径正确
+const Product = require('../models/Product'); // 确保路径正确
 const app = express();
 
 // 服务静态文件
@@ -9,30 +12,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 使用 express.json() 中间件来解析 JSON 请求体
 app.use(express.json());
 
-// MongoDB 连接 URI（请替换为你的实际连接字符串）
-const uri = process.env.MONGODB_URI;
-const client = new MongoClient(uri);
+// 同步数据库
+sequelize.sync().then(() => {
+  console.log('数据库已同步');
+}).catch((error) => {
+  console.error('数据库同步失败:', error);
+});
 
-async function connectToDatabase() {
-  try {
-    await client.connect();
-    console.log('Connected to MongoDB');
-    return client.db('shopDatabase'); // 替换为你的数据库名称
-  } catch (error) {
-    console.error('Failed to connect to MongoDB:', error);
-    process.exit(1);
-  }
-}
-
-let db;
+// 在其他路由之前添加
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
+});
 
 // API 路由
 app.post('/api/products', async (req, res) => {
   try {
     const { name, price, image } = req.body;
-    const collection = db.collection('products');
-    const result = await collection.insertOne({ name, price, image });
-    res.status(201).json({ id: result.insertedId, name, price, image });
+    console.log('接收到的商品数据:', req.body); // 添加日志
+    const product = await Product.create({ name, price, image });
+    res.status(201).json(product);
   } catch (error) {
     console.error('Error adding product:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -41,8 +39,8 @@ app.post('/api/products', async (req, res) => {
 
 app.get('/api/products', async (req, res) => {
   try {
-    const collection = db.collection('products');
-    const products = await collection.find({}).toArray();
+    const products = await Product.findAll();
+    console.log('返回的商品:', products); // 添加日志
     res.json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -55,13 +53,46 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const PORT = process.env.PORT || 3000;
+portfinder.getPort((err, port) => {
+  if (err) {
+    console.error('无法找到可用端口:', err);
+    process.exit(1);
+  }
 
-// 连接到数据库并启动服务器
-connectToDatabase().then((database) => {
-  db = database;
-  app.listen(PORT, () => {
-    console.log(`服务器运行在端口 ${PORT}`);
+  const server = app.listen(port, () => {
+    console.log(`服务器运行在端口 ${port}`);
+  });
+
+  // 添加错误处理
+  server.on('error', (error) => {
+    if (error.syscall !== 'listen') {
+      throw error;
+    }
+
+    switch (error.code) {
+      case 'EACCES':
+        console.error(`端口 ${port} 需要提升的权限`);
+        process.exit(1);
+        break;
+      case 'EADDRINUSE':
+        console.error(`端口 ${port} 已被占用`);
+        // 尝试使用下一个可用端口
+        portfinder.getPort((err, newPort) => {
+          if (err) {
+            console.error('无法找到新的可用端口:', err);
+            process.exit(1);
+          }
+          server.listen(newPort);
+        });
+        break;
+      default:
+        throw error;
+    }
+  });
+
+  server.on('listening', () => {
+    const addr = server.address();
+    console.log(`服务器正在监听 ${typeof addr === 'string' ? addr : addr.port}`);
   });
 });
 
