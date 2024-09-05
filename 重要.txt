@@ -1,3 +1,9 @@
 git add .
    git commit -m "准备部署到 Vercel"
    git push -u origin main
+
+要使用管理员功能，管理员需要在浏览器控制台中输入：await adminLogin('admin123');
+
+測試服:http://localhost:8002/#products
+
+啟用測試服npm run dev

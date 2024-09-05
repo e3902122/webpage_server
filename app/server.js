@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs').promises;
 const portfinder = require('portfinder');
 const app = express();
 
@@ -9,19 +10,50 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 使用 express.json() 中间件来解析 JSON 请求体
 app.use(express.json());
 
-// 模拟数据库
-let products = [];
+const productsFile = path.join(__dirname, 'products.json');
+
+// 读取商品数据
+async function readProducts() {
+  try {
+    const data = await fs.readFile(productsFile, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      // 如果文件不存在，返回空数组
+      return [];
+    }
+    throw error;
+  }
+}
+
+// 写入商品数据
+async function writeProducts(products) {
+  await fs.writeFile(productsFile, JSON.stringify(products, null, 2));
+}
 
 // API 路由
-app.post('/api/products', (req, res) => {
-  const { name, price, image } = req.body;
-  const newProduct = { id: Date.now(), name, price, image };
-  products.push(newProduct);
-  res.status(201).json(newProduct);
+app.post('/api/products', async (req, res) => {
+  try {
+    const { name, price, image } = req.body;
+    const products = await readProducts();
+    const newProduct = { id: Date.now(), name, price, image };
+    products.push(newProduct);
+    await writeProducts(products);
+    res.status(201).json(newProduct);
+  } catch (error) {
+    console.error('Error adding product:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
-app.get('/api/products', (req, res) => {
-  res.json(products);
+app.get('/api/products', async (req, res) => {
+  try {
+    const products = await readProducts();
+    res.json(products);
+  } catch (error) {
+    console.error('Error reading products:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 // 所有其他路由都返回 index.html

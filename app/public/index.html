@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+    <div class="background"></div>
     <header class="glass">
         <h1>欢迎来到我的商店</h1>
         <nav>
@@ -15,71 +16,42 @@
                 <li><a href="#products">商品</a></li>
                 <li><a href="#about">关于我们</a></li>
                 <li><a href="#contact">联系我们</a></li>
-                <li><a href="#admin">管理员</a></li>
             </ul>
         </nav>
     </header>
 
-    <main>
+    <main class="glass">
         <section id="home">
             <h2>热门商品</h2>
             <div class="product-grid">
-                <!-- 这里可以添加商品卡片 -->
-                <div class="product-card">
-                    <img src="/images/product1.jpg" alt="商品1">
-                    <h3>商品1</h3>
-                    <p>价格: $XX.XX</p>
-                    <button>加入购物车</button>
-                </div>
-                <!-- 可以添加更多商品卡片 -->
+                <!-- 商品将通过 JavaScript 动态添加 -->
             </div>
         </section>
 
         <section id="products">
             <h2>所有商品</h2>
-            <!-- 这里可以添加商品列表或网格 -->
+            <div class="product-grid">
+                <!-- 所有商品将通过 JavaScript 动态添加 -->
+            </div>
         </section>
 
         <section id="about">
             <h2>关于我们</h2>
-            <p>这里是关于我们商店的介绍...</p>
+            <p>我们是一家专注于提供高质量商品的在线商店。我们的使命是为客户带来最好的购物体验。</p>
         </section>
 
         <section id="contact">
             <h2>联系我们</h2>
-            <form>
-                <label for="name">姓名：</label>
-                <input type="text" id="name" name="name" required>
-
-                <label for="email">邮箱：</label>
-                <input type="email" id="email" name="email" required>
-
-                <label for="message">留言：</label>
-                <textarea id="message" name="message" required></textarea>
-
+            <form id="contact-form">
+                <input type="text" id="name" name="name" placeholder="您的姓名" required>
+                <input type="email" id="email" name="email" placeholder="您的邮箱" required>
+                <textarea id="message" name="message" placeholder="您的留言" required></textarea>
                 <button type="submit">发送</button>
-            </form>
-        </section>
-
-        <!-- 在 main 标签内添加管理员部分 -->
-        <section id="admin" class="glass">
-            <h2>管理员后台</h2>
-            <form id="product-form">
-                <label for="product-name">商品名称：</label>
-                <input type="text" id="product-name" required>
-                
-                <label for="product-price">商品价格：</label>
-                <input type="number" id="product-price" required>
-                
-                <label for="product-image">商品图片 URL：</label>
-                <input type="url" id="product-image" required>
-                
-                <button type="submit">上架商品</button>
             </form>
         </section>
     </main>
 
-    <footer>
+    <footer class="glass">
         <p>&copy; 2024 我的商店. 保留所有权利。</p>
     </footer>
 
